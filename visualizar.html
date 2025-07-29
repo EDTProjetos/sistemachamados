@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Chamados - Visualizar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <style>
+        @keyframes spin { from { transform: rotate(0deg ); } to { transform: rotate(360deg); } }
+        .fa-spinner { animation: spin 1s linear infinite; }
+        tr:hover { background-color: #f9fafb; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <i class="fas fa-ticket-alt text-2xl text-teal-600"></i>
+                <h1 class="text-xl font-bold text-gray-900">Sistema de Chamados</h1>
+            </div>
+            <nav class="flex items-center space-x-2">
+                <a href="index.html" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-300 transition-colors">
+                    <i class="fas fa-plus mr-2"></i>Abrir Chamado
+                </a>
+                <a href="visualizar.html" class="bg-teal-600 text-white px-4 py-2 rounded-md text-sm font-medium shadow-sm hover:bg-teal-700 transition-colors">
+                    <i class="fas fa-list-ul mr-2"></i>Visualizar Chamados
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 py-10">
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">Painel de Chamados</h2>
+            
+            <!-- Filtros -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 p-4 bg-gray-50 rounded-md border">
+                <div>
+                    <label for="filtroSetor" class="text-sm font-medium text-gray-700">Filtrar por Setor</label>
+                    <select id="filtroSetor" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500">
+                        <option value="">Todos</option>
+                        <option>TI</option>
+                        <option>Recursos Humanos</option>
+                        <option>Financeiro</option>
+                        <option>Comercial</option>
+                        <option>Operações</option>
+                        <option>Planejamento</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="filtroPrioridade" class="text-sm font-medium text-gray-700">Filtrar por Prioridade</label>
+                    <select id="filtroPrioridade" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500">
+                        <option value="">Todas</option>
+                        <option value="Alta">Alta</option>
+                        <option value="Média">Média</option>
+                        <option value="Baixa">Baixa</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="filtroStatus" class="text-sm font-medium text-gray-700">Filtrar por Status</label>
+                    <select id="filtroStatus" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500">
+                        <option value="">Todos</option>
+                        <option value="Aberto">Aberto</option>
+                        <option value="Em Andamento">Em Andamento</option>
+                        <option value="Concluído">Concluído</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Tabela de Chamados -->
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Solicitante</th>
+                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Setor</th>
+                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Descrição</th>
+                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Data</th>
+                            <th class="px-6 py-3 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">Prioridade</th>
+                            <th class="px-6 py-3 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="chamadosTableBody" class="bg-white divide-y divide-gray-200">
+                        <!-- Linhas serão inseridas via JS -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Estado de Carregamento/Vazio -->
+            <div id="tableState" class="text-center py-10"></div>
+        </div>
+    </main>
+
+    <script src="assets/js/view.js"></script>
+</body>
+</html>
