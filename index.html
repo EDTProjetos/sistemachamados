@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Chamados - Abrir Chamado</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <style>
+        /* Animação de rotação para o spinner */
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .fa-spinner {
+            animation: spin 1s linear infinite;
+        }
+        /* Estilo para focar nos inputs */
+        input:focus, select:focus, textarea:focus {
+            outline: none !important;
+            border-color: #20c997 !important; /* Cor verde-água */
+            box-shadow: 0 0 0 3px rgba(32, 201, 151, 0.3) !important; /* Sombra suave */
+        }
+        /* Estilo para o botão de envio */
+        .btn-primary {
+            background-color: #20c997; /* Verde-água */
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: all 0.2s ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .btn-primary:hover {
+            background-color: #17a2b8; /* Azul mais escuro ao passar o mouse */
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+        .btn-primary:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800 font-sans">
+
+    <!-- Tela de Login -->
+    <div id="loginScreen" class="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-500 to-cyan-600">
+        <div class="bg-white p-10 rounded-xl shadow-2xl w-full max-w-sm transform transition-all duration-300 hover:scale-105">
+            <h2 class="text-3xl font-extrabold text-center text-teal-700 mb-8">
+                <i class="fas fa-lock mr-3"></i>Login do Sistema
+            </h2>
+            <div class="space-y-6">
+                <div>
+                    <label for="loginUser" class="block text-sm font-semibold text-gray-700 mb-1">Usuário</label>
+                    <input type="text" id="loginUser" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition duration-200" placeholder="Digite seu usuário">
+                </div>
+                <div>
+                    <label for="loginPass" class="block text-sm font-semibold text-gray-700 mb-1">Senha</label>
+                    <input type="password" id="loginPass" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition duration-200" placeholder="Digite sua senha">
+                </div>
+                <button onclick="verificarLogin()" class="w-full btn-primary">
+                    Entrar
+                </button>
+                <p id="loginErro" class="text-red-600 text-sm text-center hidden mt-4 font-medium">Usuário ou senha incorretos. Tente novamente.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Conteúdo do Sistema (oculto até login) -->
+    <div id="mainApp" class="hidden min-h-screen flex flex-col">
+        <!-- Header -->
+        <header class="bg-white shadow-lg py-4">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+                <div class="flex items-center space-x-4">
+                    <i class="fas fa-ticket-alt text-3xl text-teal-600"></i>
+                    <h1 class="text-2xl font-extrabold text-gray-900">Sistema de Chamados</h1>
+                </div>
+                <nav class="flex items-center space-x-3">
+                    <a href="index.html" class="btn-primary text-sm">
+                        <i class="fas fa-plus mr-2"></i>Abrir Chamado
+                    </a>
+                    <a href="visualizar.html" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-300 transition-colors shadow-sm">
+                        <i class="fas fa-list-ul mr-2"></i>Visualizar Chamados
+                    </a>
+                </nav>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-grow max-w-4xl mx-auto px-4 py-12 w-full">
+            <div class="bg-white rounded-xl shadow-2xl overflow-hidden border border-gray-200">
+                <div class="bg-gradient-to-r from-teal-500 to-cyan-600 p-6">
+                    <h2 class="text-3xl font-bold text-white flex items-center">
+                        <i class="fas fa-edit mr-4"></i>Abrir Novo Chamado
+                    </h2>
+                    <p class="text-teal-100 mt-2">Preencha os detalhes abaixo para registrar seu problema ou solicitação.</p>
+                </div>
+                <form id="chamadoForm" class="p-8 space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="nome" class="block text-sm font-semibold text-gray-700 mb-1">Seu Nome Completo *</label>
+                            <input type="text" id="nome" required class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-teal-500 transition duration-200" placeholder="Ex: João da Silva">
+                        </div>
+                        <div>
+                            <label for="email" class="block text-sm font-semibold text-gray-700 mb-1">Seu Email *</label>
+                            <input type="email" id="email" required class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-teal-500 transition duration-200" placeholder="Ex: seu.email@empresa.com">
+                        </div>
+                        <div>
+                            <label for="setor" class="block text-sm font-semibold text-gray-700 mb-1">Setor *</label>
+                            <select id="setor" required class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-teal-500 transition duration-200">
+                                <option value="">Selecione o setor</option>
+                                <option>Tecnologia</option>
+                                <option>Recursos Humanos</option>
+                                <option>Financeiro</option>
+                                <option>Comercial</option>
+                                <option>Operações</option>
+                                <option>Planejamento</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="prioridade" class="block text-sm font-semibold text-gray-700 mb-1">Prioridade *</label>
+                            <select id="prioridade" required class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-teal-500 transition duration-200">
+                                <option value="">Selecione a prioridade</option>
+                                <option>Baixa</option>
+                                <option>Média</option>
+                                <option>Alta</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="descricao" class="block text-sm font-semibold text-gray-700 mb-1">Descrição do Chamado *</label>
+                        <textarea id="descricao" rows="5" required class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-teal-500 transition duration-200" placeholder="Descreva detalhadamente o problema ou solicitação..."></textarea>
+                    </div>
+                    <div>
+                        <label for="dataHora" class="block text-sm font-semibold text-gray-700 mb-1">Data e Hora da Solicitação</label>
+                        <input type="text" id="dataHora" class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 cursor-not-allowed" readonly>
+                    </div>
+
+                    <div id="statusMessage" class="hidden p-4 rounded-lg text-sm font-medium text-center"></div>
+
+                    <div class="flex justify-end">
+                        <button type="submit" id="submitBtn" class="btn-primary">
+                            <span id="btnText">Enviar Chamado</span>
+                            <i id="btnSpinner" class="fas fa-spinner hidden ml-2"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </main>
+
+        <footer class="bg-gray-800 text-white text-center p-4 mt-8">
+            <p>&copy; 2024 Sistema de Chamados. Todos os direitos reservados.</p>
+        </footer>
+    </div>
+
+    <script>
+        // Função para exibir o conteúdo principal após o login
+        function showMainApp() {
+            document.getElementById("loginScreen").style.display = "none";
+            document.getElementById("mainApp").classList.remove("hidden");
+        }
+
+        // Função para verificar o login
+        function verificarLogin() {
+            const usuario = document.getElementById("loginUser").value;
+            const senha = document.getElementById("loginPass").value;
+            const erro = document.getElementById("loginErro");
+
+            // Credenciais de exemplo (substitua por autenticação real em um ambiente de produção)
+            if (usuario === "admin2" && senha === "admin2") {
+                sessionStorage.setItem('loggedIn', 'true'); // Armazena o estado de login na sessão
+                showMainApp();
+            } else {
+                erro.classList.remove("hidden");
+            }
+        }
+
+        // Preenche data/hora atual no campo e verifica o estado de login ao carregar a página
+        window.onload = function () {
+            // Verifica se o usuário já está logado na sessão
+            if (sessionStorage.getItem('loggedIn') === 'true') {
+                showMainApp();
+            }
+
+            const agora = new Date();
+            const dataHoraFormatada = agora.toLocaleString('pt-BR', {
+                dateStyle: 'short',
+                timeStyle: 'short'
+            });
+            const campoData = document.getElementById("dataHora");
+            if (campoData) campoData.value = dataHoraFormatada;
+        };
+    </script>
+
+    <script src="assets/js/form.js"></script>
+</body>
+</html>
