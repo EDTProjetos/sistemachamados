@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const AIRTABLE_URL = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_NAME}?sort%5B0%5D%5Bfield%5D=DataSolicitacao&sort%5B0%5D%5Bdirection%5D=desc`;
 
-    const tableBody = document.getElementById('chamadosTableBody' );
+    const tableBody = document.getElementById('chamadosTableBody');
     const tableState = document.getElementById('tableState');
     const filtros = {
         setor: document.getElementById('filtroSetor'),
@@ -22,39 +22,64 @@ document.addEventListener('DOMContentLoaded', () => {
         tableState.innerHTML = `<p class="text-gray-500">${message}</p>`;
     }
 
+    // Função para obter as classes de estilo para os "pills" de prioridade e status
     const getPillClass = (value, type) => {
         const classes = {
-            Prioridade: { 'Alta': 'bg-red-100 text-red-800', 'Média': 'bg-yellow-100 text-yellow-800', 'Baixa': 'bg-green-100 text-green-800' },
-            Status: { 'Aberto': 'bg-blue-100 text-blue-800', 'Em Andamento': 'bg-purple-100 text-purple-800', 'Concluído': 'bg-gray-300 text-gray-900' }
+            Prioridade: {
+                'Alta': 'pill pill-danger',
+                'Média': 'pill pill-warning',
+                'Baixa': 'pill pill-success'
+            },
+            Status: {
+                'Aberto': 'pill pill-info',
+                'Em Andamento': 'pill pill-purple',
+                'Concluído': 'pill pill-gray'
+            }
         };
-        return (classes[type] && classes[type][value]) || 'bg-gray-100 text-gray-800';
+        return (classes[type] && classes[type][value]) || 'pill bg-gray-200 text-gray-800';
     };
 
+    // Função para renderizar os chamados na tabela
     function renderizarChamados(chamados) {
         tableBody.innerHTML = '';
         if (chamados.length === 0) {
             setTableState('Nenhum chamado encontrado com os filtros selecionados.');
             return;
         }
-        tableState.innerHTML = '';
 
         chamados.forEach(chamado => {
             const fields = chamado.fields;
-            const dataFormatada = new Date(fields.DataSolicitacao).toLocaleString('pt-BR');
-            
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td class="px-6 py-4"><div class="text-sm font-medium text-gray-900">${fields.Nome}</div><div class="text-sm text-gray-500">${fields.Email}</div></td>
-                <td class="px-6 py-4 text-sm text-gray-600">${fields.Setor}</td>
-                <td class="px-6 py-4"><p class="text-sm text-gray-800 truncate" title="${fields.Descricao}">${fields.Descricao}</p></td>
-                <td class="px-6 py-4 text-sm text-gray-600">${dataFormatada}</td>
-                <td class="px-6 py-4 text-center"><span class="px-3 py-1 inline-flex text-xs font-semibold rounded-full ${getPillClass(fields.Prioridade, 'Prioridade')}">${fields.Prioridade}</span></td>
-                <td class="px-6 py-4 text-center"><span class="px-3 py-1 inline-flex text-xs font-semibold rounded-full ${getPillClass(fields.Status, 'Status')}">${fields.Status}</span></td>
+            const row = document.createElement('tr');
+            row.className = 'hover:bg-gray-50'; // Adiciona um leve hover para as linhas
+
+            // Formata a data para exibição
+            const dataSolicitacao = fields.DataSolicitacao ? new Date(fields.DataSolicitacao).toLocaleString('pt-BR', {
+                dateStyle: 'short',
+                timeStyle: 'short'
+            }) : 'N/A';
+
+            row.innerHTML = `
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${fields.Nome || 'N/A'}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${fields.Setor || 'N/A'}</td>
+                <td class="px-6 py-4 text-sm text-gray-700 max-w-xs truncate">${fields.Descricao || 'N/A'}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${dataSolicitacao}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-center">
+                    <span class="${getPillClass(fields.Prioridade, 'Prioridade')}">
+                        ${fields.Prioridade || 'N/A'}
+                    </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-center">
+                    <span class="${getPillClass(fields.Status, 'Status')}">
+                        ${fields.Status || 'N/A'}
+                    </span>
+                </td>
             `;
-            tableBody.appendChild(tr);
+            tableBody.appendChild(row);
         });
+        tableState.innerHTML = ''; // Limpa a mensagem de estado se houver chamados
     }
 
+    // Função para aplicar os filtros selecionados
     function aplicarFiltros() {
         const setor = filtros.setor.value;
         const prioridade = filtros.prioridade.value;
@@ -69,18 +94,22 @@ document.addEventListener('DOMContentLoaded', () => {
         renderizarChamados(chamadosFiltrados);
     }
 
+    // Função para carregar os chamados do Airtable
     async function carregarChamados() {
         if (!AIRTABLE_TOKEN.startsWith('pat') || !AIRTABLE_BASE_ID.startsWith('app')) {
             setTableState("Erro: As credenciais do Airtable não foram configuradas corretamente no arquivo view.js.");
             return;
         }
-        setTableState('<i class="fas fa-spinner text-2xl text-teal-600"></i> Carregando chamados...');
+        setTableState('<i class="fas fa-spinner text-2xl text-teal-600 animate-spin"></i> Carregando chamados...');
 
         try {
             const response = await fetch(AIRTABLE_URL, {
                 headers: { 'Authorization': `Bearer ${AIRTABLE_TOKEN}` }
             });
-            if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error.message || `Erro HTTP: ${response.status}`);
+            }
             
             const data = await response.json();
             todosChamados = data.records;
@@ -88,7 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (todosChamados.length === 0) {
                 setTableState('Nenhum chamado aberto no momento.');
             } else {
-                aplicarFiltros();
+                aplicarFiltros(); // Aplica os filtros iniciais (todos)
             }
         } catch (error) {
             console.error("Erro ao carregar do Airtable:", error);
@@ -96,6 +125,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Adiciona event listeners para os filtros
     Object.values(filtros).forEach(filtro => filtro.addEventListener('change', aplicarFiltros));
+
+    // Carrega os chamados ao iniciar a página
     carregarChamados();
 });
