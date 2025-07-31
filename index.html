@@ -68,7 +68,6 @@
 </head>
 <body class="min-h-screen gradient-bg">
 
-    <!-- Tela de Login -->
     <div id="loginScreen" class="min-h-screen flex items-center justify-center p-4">
         <div class="glass-effect p-8 rounded-2xl shadow-2xl w-full max-w-md card-hover fade-in">
             <div class="text-center mb-8">
@@ -101,9 +100,7 @@
         </div>
     </div>
 
-    <!-- Conteúdo do Sistema (oculto até login) -->
     <div id="mainApp" class="hidden min-h-screen">
-        <!-- Header -->
         <header class="glass-effect shadow-lg sticky top-0 z-50">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
                 <div class="flex justify-between items-center">
@@ -129,10 +126,8 @@
             </div>
         </header>
 
-        <!-- Main Content -->
         <main class="max-w-4xl mx-auto px-4 py-8">
             <div class="glass-effect rounded-3xl shadow-2xl overflow-hidden card-hover fade-in">
-                <!-- Header do Card -->
                 <div class="bg-gradient-to-r from-teal-600 via-teal-700 to-teal-800 p-8 relative overflow-hidden">
                     <div class="absolute inset-0 bg-black opacity-10"></div>
                     <div class="relative z-10">
@@ -153,9 +148,7 @@
                     </div>
                 </div>
 
-                <!-- Formulário -->
                 <form id="chamadoForm" class="p-8 space-y-8">
-                    <!-- Informações Pessoais -->
                     <div class="bg-gray-50 p-6 rounded-2xl">
                         <h3 class="text-xl font-semibold text-gray-800 mb-6 flex items-center">
                             <i class="fas fa-user-circle mr-3 text-teal-600"></i>
@@ -175,15 +168,13 @@
                         </div>
                     </div>
 
-                    <!-- Detalhes do Chamado -->
                     <div class="bg-blue-50 p-6 rounded-2xl">
                         <h3 class="text-xl font-semibold text-gray-800 mb-6 flex items-center">
                             <i class="fas fa-cogs mr-3 text-blue-600"></i>
                             Detalhes do Chamado
                         </h3>
                         
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                            <div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6"> <div>
                                 <label for="setor" class="block text-sm font-medium text-gray-700 mb-2">Setor *</label>
                                 <select id="setor" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-0 focus:border-blue-500 input-focus bg-white">
                                     <option value="">Selecione o setor...</option>
@@ -205,12 +196,7 @@
                                     <option value="Baixa" class="text-green-600">🟢 Baixa</option>
                                 </select>
                             </div>
-                            
-                            <div>
-                                <label for="chamadoId" class="block text-sm font-medium text-gray-700 mb-2">ID do Chamado</label>
-                                <input type="text" id="chamadoId" readonly class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl bg-gray-100 text-gray-600 font-mono text-center">
                             </div>
-                        </div>
 
                         <div>
                             <label for="descricao" class="block text-sm font-medium text-gray-700 mb-2">Descrição Detalhada do Problema *</label>
@@ -218,7 +204,6 @@
                         </div>
                     </div>
 
-                    <!-- Informações do Sistema -->
                     <div class="bg-green-50 p-6 rounded-2xl">
                         <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
                             <i class="fas fa-clock mr-3 text-green-600"></i>
@@ -238,10 +223,8 @@
                         </div>
                     </div>
 
-                    <!-- Status Message Area -->
                     <div id="statusMessage" class="hidden p-6 rounded-2xl text-sm font-medium"></div>
 
-                    <!-- Botões de Ação -->
                     <div class="flex items-center justify-end space-x-4 pt-6 border-t-2 border-gray-100">
                         <button type="reset" class="bg-gray-200 text-gray-800 px-8 py-3 rounded-xl font-semibold hover:bg-gray-300 transition-all duration-300 transform hover:scale-105 shadow-md">
                             <i class="fas fa-eraser mr-2"></i>Limpar Formulário
@@ -258,7 +241,6 @@
             </div>
         </main>
         
-        <!-- Footer -->
         <footer class="text-center py-8 text-gray-600">
             <p class="flex items-center justify-center">
                 <i class="fas fa-shield-alt mr-2 text-teal-600"></i>
@@ -276,22 +258,15 @@
             if (usuario === "admin2" && senha === "admin2") {
                 document.getElementById("loginScreen").style.display = "none";
                 document.getElementById("mainApp").classList.remove("hidden");
-                gerarProximoId();
+                // Removida a chamada a gerarProximoId() daqui
             } else {
                 erro.classList.remove("hidden");
                 setTimeout(() => erro.classList.add("hidden"), 3000);
             }
         }
 
-        // Função para gerar o próximo ID sequencial
-        function gerarProximoId() {
-            let ultimoId = localStorage.getItem('ultimoChamadoId') || '0000';
-            let proximoNumero = parseInt(ultimoId) + 1;
-            let proximoId = proximoNumero.toString().padStart(4, '0');
-            
-            document.getElementById('chamadoId').value = proximoId;
-            return proximoId;
-        }
+        // A função 'gerarProximoId' e o uso de 'localStorage' foram removidos.
+        // O Airtable agora lida com a geração de IDs.
 
         // Preenche data/hora atual no campo
         window.onload = function () {
