@@ -7,140 +7,323 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
     <style>
-        /* Animação de rotação para o spinner */
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+        @keyframes spin { from { transform: rotate(0deg ); } to { transform: rotate(360deg); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideIn { from { transform: translateX(-100%); } to { transform: translateX(0); } }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        @keyframes shimmer { 0% { background-position: -200px 0; } 100% { background-position: calc(200px + 100%) 0; } }
+        
+        .fa-spinner { animation: spin 1s linear infinite; }
+        .fade-in { animation: fadeIn 0.6s ease-out; }
+        .slide-in { animation: slideIn 0.5s ease-out; }
+        .pulse-animation { animation: pulse 2s infinite; }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
-        .fa-spinner {
-            animation: spin 1s linear infinite;
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #0f766e 0%, #14b8a6 50%, #5eead4 100%);
         }
-        /* Estilo para focar nos selects */
-        select:focus {
-            outline: none !important;
-            border-color: #20c997 !important; /* Cor verde-água */
-            box-shadow: 0 0 0 3px rgba(32, 201, 151, 0.3) !important; /* Sombra suave */
+        
+        .card-hover {
+            transition: all 0.3s ease;
         }
-        /* Estilo para linhas da tabela ao passar o mouse */
-        tr:hover {
-            background-color: #f0fdf4; /* Um verde bem claro */
-            transition: background-color 0.2s ease-in-out;
+        
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
         }
-        /* Estilo para o botão de navegação ativo */
-        .btn-active {
-            background-color: #20c997; /* Verde-água */
-            color: white;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        
+        .table-row-hover {
+            transition: all 0.2s ease;
         }
-        .btn-active:hover {
-            background-color: #17a2b8; /* Azul mais escuro ao passar o mouse */
+        
+        .table-row-hover:hover {
+            background: linear-gradient(90deg, rgba(20, 184, 166, 0.05) 0%, rgba(20, 184, 166, 0.1) 50%, rgba(20, 184, 166, 0.05) 100%);
+            transform: scale(1.01);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
-        /* Estilo para os pills de status/prioridade */
-        .pill {
-            display: inline-flex;
-            align-items: center;
-            padding: 0.3rem 0.75rem;
-            border-radius: 9999px; /* Arredondado */
-            font-size: 0.75rem; /* text-xs */
-            font-weight: 600; /* font-semibold */
-            line-height: 1;
-            text-transform: uppercase;
+        
+        .filter-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border: 2px solid transparent;
+            background-clip: padding-box;
         }
-        .pill-success { background-color: #d1fae5; color: #065f46; } /* Verde para Baixa Prioridade */
-        .pill-warning { background-color: #fef3c7; color: #92400e; } /* Amarelo para Média Prioridade */
-        .pill-danger { background-color: #fee2e2; color: #991b1b; } /* Vermelho para Alta Prioridade */
-        .pill-info { background-color: #dbeafe; color: #1e40af; } /* Azul para Status Aberto */
-        .pill-purple { background-color: #ede9fe; color: #5b21b6; } /* Roxo para Em Andamento */
-        .pill-gray { background-color: #e5e7eb; color: #374151; } /* Cinza para Concluído */
+        
+        .filter-card:hover {
+            border-color: rgba(20, 184, 166, 0.3);
+        }
+        
+        .priority-high { 
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+            color: #dc2626;
+            border: 1px solid #fca5a5;
+        }
+        
+        .priority-medium { 
+            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+            color: #d97706;
+            border: 1px solid #fcd34d;
+        }
+        
+        .priority-low { 
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            color: #16a34a;
+            border: 1px solid #86efac;
+        }
+        
+        .status-open { 
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            color: #2563eb;
+            border: 1px solid #93c5fd;
+        }
+        
+        .status-progress { 
+            background: linear-gradient(135deg, #faf5ff 0%, #e9d5ff 100%);
+            color: #9333ea;
+            border: 1px solid #c4b5fd;
+        }
+        
+        .status-completed { 
+            background: linear-gradient(135deg, #f9fafb 0%, #e5e7eb 100%);
+            color: #374151;
+            border: 1px solid #d1d5db;
+        }
+        
+        .loading-shimmer {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200px 100%;
+            animation: shimmer 1.5s infinite;
+        }
+        
+        .stats-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .table-header {
+            background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
+        }
+        
+        .search-input {
+            transition: all 0.3s ease;
+        }
+        
+        .search-input:focus {
+            transform: scale(1.02);
+            box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1);
+        }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-800 font-sans">
+<body class="min-h-screen gradient-bg">
 
     <!-- Header -->
-    <header class="bg-white shadow-lg py-4">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-            <div class="flex items-center space-x-4">
-                <i class="fas fa-ticket-alt text-3xl text-teal-600"></i>
-                <h1 class="text-2xl font-extrabold text-gray-900">Sistema de Chamados</h1>
+    <header class="glass-effect shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-4 slide-in">
+                    <div class="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-teal-600 to-teal-700 rounded-xl">
+                        <i class="fas fa-headset text-xl text-white"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-800">HelpDesk Pro</h1>
+                        <p class="text-sm text-gray-600">Painel de Chamados</p>
+                    </div>
+                </div>
+                
+                <nav class="flex items-center space-x-3">
+                    <a href="index.html" class="bg-white text-gray-700 px-6 py-3 rounded-xl text-sm font-medium hover:bg-gray-50 transition-all duration-300 shadow-md border border-gray-200">
+                        <i class="fas fa-plus mr-2"></i>Novo Chamado
+                    </a>
+                    <a href="visualizar.html" class="bg-gradient-to-r from-teal-600 to-teal-700 text-white px-6 py-3 rounded-xl text-sm font-medium shadow-lg hover:from-teal-700 hover:to-teal-800 transition-all duration-300 transform hover:scale-105">
+                        <i class="fas fa-list-ul mr-2"></i>Ver Chamados
+                    </a>
+                </nav>
             </div>
-            <nav class="flex items-center space-x-3">
-                <a href="index.html" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-300 transition-colors shadow-sm">
-                    <i class="fas fa-plus mr-2"></i>Abrir Chamado
-                </a>
-                <a href="visualizar.html" class="btn-active px-4 py-2 rounded-md text-sm font-medium transition-colors">
-                    <i class="fas fa-list-ul mr-2"></i>Visualizar Chamados
-                </a>
-            </nav>
         </div>
     </header>
 
     <!-- Main Content -->
-    <main class="flex-grow max-w-7xl mx-auto px-4 py-12 w-full">
-        <div class="bg-white rounded-xl shadow-2xl p-8 border border-gray-200">
-            <h2 class="text-3xl font-bold text-gray-900 mb-6">
-                <i class="fas fa-clipboard-list mr-3 text-teal-600"></i>Painel de Chamados
-            </h2>
-            
-            <!-- Filtros -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 p-6 bg-gray-50 rounded-lg border border-gray-200 shadow-inner">
-                <div>
-                    <label for="filtroSetor" class="block text-sm font-semibold text-gray-700 mb-1">Filtrar por Setor:</label>
-                    <select id="filtroSetor" class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-teal-500 transition duration-200">
-                        <option value="">Todos os Setores</option>
-                        <option>Tecnologia</option>
-                        <option>Recursos Humanos</option>
-                        <option>Financeiro</option>
-                        <option>Comercial</option>
-                        <option>Operações</option>
-                        <option>Planejamento</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="filtroPrioridade" class="block text-sm font-semibold text-gray-700 mb-1">Filtrar por Prioridade:</label>
-                    <select id="filtroPrioridade" class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-teal-500 transition duration-200">
-                        <option value="">Todas as Prioridades</option>
-                        <option>Baixa</option>
-                        <option>Média</option>
-                        <option>Alta</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="filtroStatus" class="block text-sm font-semibold text-gray-700 mb-1">Filtrar por Status:</label>
-                    <select id="filtroStatus" class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-teal-500 transition duration-200">
-                        <option value="">Todos os Status</option>
-                        <option>Aberto</option>
-                        <option>Em Andamento</option>
-                        <option>Concluído</option>
-                    </select>
+    <main class="max-w-7xl mx-auto px-4 py-8">
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8 fade-in">
+            <div class="stats-card rounded-2xl p-6 card-hover">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Total de Chamados</p>
+                        <p id="totalChamados" class="text-3xl font-bold text-gray-900">-</p>
+                    </div>
+                    <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-ticket-alt text-white text-xl"></i>
+                    </div>
                 </div>
             </div>
             
-            <!-- Tabela de Chamados -->
-            <div class="overflow-x-auto rounded-lg shadow-md border border-gray-200">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-100">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Solicitante</th>
-                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Setor</th>
-                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Descrição</th>
-                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Data</th>
-                            <th class="px-6 py-3 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">Prioridade</th>
-                            <th class="px-6 py-3 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="chamadosTableBody" class="bg-white divide-y divide-gray-200">
-                        <!-- Linhas serão inseridas via JS -->
-                    </tbody>
-                </table>
+            <div class="stats-card rounded-2xl p-6 card-hover">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Chamados Abertos</p>
+                        <p id="chamadosAbertos" class="text-3xl font-bold text-blue-600">-</p>
+                    </div>
+                    <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-clock text-white text-xl"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="stats-card rounded-2xl p-6 card-hover">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Em Andamento</p>
+                        <p id="chamadosAndamento" class="text-3xl font-bold text-purple-600">-</p>
+                    </div>
+                    <div class="w-12 h-12 bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-cog text-white text-xl"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="stats-card rounded-2xl p-6 card-hover">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Concluídos</p>
+                        <p id="chamadosConcluidos" class="text-3xl font-bold text-green-600">-</p>
+                    </div>
+                    <div class="w-12 h-12 bg-gradient-to-r from-green-500 to-green-600 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-check-circle text-white text-xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Panel -->
+        <div class="glass-effect rounded-3xl shadow-2xl overflow-hidden card-hover fade-in">
+            <!-- Panel Header -->
+            <div class="bg-gradient-to-r from-teal-600 via-teal-700 to-teal-800 p-8 relative overflow-hidden">
+                <div class="absolute inset-0 bg-black opacity-10"></div>
+                <div class="relative z-10">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-3xl font-bold text-white flex items-center">
+                                <i class="fas fa-chart-line mr-4 text-4xl"></i>
+                                Painel de Controle
+                            </h2>
+                            <p class="text-teal-100 mt-2 text-lg">Gerencie e monitore todos os chamados do sistema</p>
+                        </div>
+                        <div class="hidden md:block">
+                            <div class="w-24 h-24 bg-white bg-opacity-20 rounded-full flex items-center justify-center pulse-animation">
+                                <i class="fas fa-search text-3xl text-white"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search and Filters -->
+            <div class="p-8 bg-gray-50">
+                <div class="mb-6">
+                    <div class="relative">
+                        <input type="text" id="searchInput" placeholder="Buscar por nome, email ou descrição..." class="w-full px-6 py-4 pl-12 border-2 border-gray-200 rounded-2xl focus:ring-0 focus:border-teal-500 search-input text-lg">
+                        <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-xl"></i>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="filter-card rounded-2xl p-6">
+                        <label for="filtroSetor" class="block text-sm font-semibold text-gray-700 mb-3 flex items-center">
+                            <i class="fas fa-building mr-2 text-teal-600"></i>
+                            Filtrar por Setor
+                        </label>
+                        <select id="filtroSetor" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-0 focus:border-teal-500 search-input bg-white">
+                            <option value="">Todos os setores</option>
+                            <option>TI</option>
+                            <option>Recursos Humanos</option>
+                            <option>Financeiro</option>
+                            <option>Comercial</option>
+                            <option>Operações</option>
+                            <option>Planejamento</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-card rounded-2xl p-6">
+                        <label for="filtroPrioridade" class="block text-sm font-semibold text-gray-700 mb-3 flex items-center">
+                            <i class="fas fa-exclamation-triangle mr-2 text-teal-600"></i>
+                            Filtrar por Prioridade
+                        </label>
+                        <select id="filtroPrioridade" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-0 focus:border-teal-500 search-input bg-white">
+                            <option value="">Todas as prioridades</option>
+                            <option value="Alta">🔴 Alta</option>
+                            <option value="Média">🟡 Média</option>
+                            <option value="Baixa">🟢 Baixa</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-card rounded-2xl p-6">
+                        <label for="filtroStatus" class="block text-sm font-semibold text-gray-700 mb-3 flex items-center">
+                            <i class="fas fa-tasks mr-2 text-teal-600"></i>
+                            Filtrar por Status
+                        </label>
+                        <select id="filtroStatus" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-0 focus:border-teal-500 search-input bg-white">
+                            <option value="">Todos os status</option>
+                            <option value="Aberto">🔵 Aberto</option>
+                            <option value="Em Andamento">🟣 Em Andamento</option>
+                            <option value="Concluído">⚫ Concluído</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table Container -->
+            <div class="overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full">
+                        <thead class="table-header">
+                            <tr>
+                                <th class="px-6 py-4 text-left text-sm font-bold text-white uppercase tracking-wider">
+                                    <i class="fas fa-hashtag mr-2"></i>ID
+                                </th>
+                                <th class="px-6 py-4 text-left text-sm font-bold text-white uppercase tracking-wider">
+                                    <i class="fas fa-user mr-2"></i>Solicitante
+                                </th>
+                                <th class="px-6 py-4 text-left text-sm font-bold text-white uppercase tracking-wider">
+                                    <i class="fas fa-building mr-2"></i>Setor
+                                </th>
+                                <th class="px-6 py-4 text-left text-sm font-bold text-white uppercase tracking-wider">
+                                    <i class="fas fa-file-alt mr-2"></i>Descrição
+                                </th>
+                                <th class="px-6 py-4 text-left text-sm font-bold text-white uppercase tracking-wider">
+                                    <i class="fas fa-calendar mr-2"></i>Data
+                                </th>
+                                <th class="px-6 py-4 text-center text-sm font-bold text-white uppercase tracking-wider">
+                                    <i class="fas fa-exclamation-triangle mr-2"></i>Prioridade
+                                </th>
+                                <th class="px-6 py-4 text-center text-sm font-bold text-white uppercase tracking-wider">
+                                    <i class="fas fa-tasks mr-2"></i>Status
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="chamadosTableBody" class="bg-white">
+                            <!-- Linhas serão inseridas via JS -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
             
             <!-- Estado de Carregamento/Vazio -->
-            <div id="tableState" class="text-center py-10 text-gray-500 font-medium text-lg"></div>
+            <div id="tableState" class="text-center py-16 bg-white"></div>
         </div>
     </main>
-
-    <footer class="bg-gray-800 text-white text-center p-4 mt-8">
-        <p>&copy; 2024 Sistema de Chamados. Todos os direitos reservados.</p>
+    
+    <!-- Footer -->
+    <footer class="text-center py-8 text-gray-600">
+        <p class="flex items-center justify-center">
+            <i class="fas fa-shield-alt mr-2 text-teal-600"></i>
+            Sistema HelpDesk Pro - Painel de Controle Avançado
+        </p>
     </footer>
 
     <script src="assets/js/view.js"></script>
