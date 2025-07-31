@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 "Prioridade": document.getElementById('prioridade').value,
                 "Descricao": document.getElementById('descricao').value,
                 "Status": "Aberto",
-                "DataSolicitacao": document.getElementById("dataHora").value
+                "DataSolicitacao": document.getElementById("datasolicitacao").value
             }
         };
 
