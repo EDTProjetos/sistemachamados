@@ -65,13 +65,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function animateNumber(element, targetNumber) {
         const duration = 1000;
-        const startNumber = 0;
-        const increment = targetNumber / (duration / 16);
+        const startNumber = parseInt(element.textContent || '0'); // Começa do número atual
+        const increment = (targetNumber - startNumber) / (duration / 16);
         let currentNumber = startNumber;
 
         const timer = setInterval(() => {
             currentNumber += increment;
-            if (currentNumber >= targetNumber) {
+            if ((increment > 0 && currentNumber >= targetNumber) || (increment < 0 && currentNumber <= targetNumber)) {
                 element.textContent = targetNumber;
                 clearInterval(timer);
             } else {
@@ -82,15 +82,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const getPillClass = (value, type) => {
         const classes = {
-            Prioridade: { 
-                'Alta': 'priority-high', 
-                'Média': 'priority-medium', 
-                'Baixa': 'priority-low' 
+            Prioridade: {
+                'Alta': 'priority-high',
+                'Média': 'priority-medium',
+                'Baixa': 'priority-low'
             },
-            Status: { 
-                'Aberto': 'status-open', 
-                'Em Andamento': 'status-progress', 
-                'Concluído': 'status-completed' 
+            Status: {
+                'Aberto': 'status-open',
+                'Em Andamento': 'status-progress',
+                'Concluído': 'status-completed'
             }
         };
         return (classes[type] && classes[type][value]) || 'bg-gray-100 text-gray-800';
@@ -124,20 +124,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
         chamados.forEach((chamado, index) => {
             const fields = chamado.fields;
-            const dataFormatada = fields.DataSolicitacao ? 
-                new Date(fields.DataSolicitacao).toLocaleString('pt-BR') : 
+            // Pegamos o ID gerado pelo Airtable para o registro (record.id)
+            const airtableRecordId = chamado.id;
+            // O valor do campo 'ID' na sua base, se ele for um autonumber, já será o que você deseja exibir.
+            // Se 'ID' for o seu campo Autonumber no Airtable, use fields.ID.
+            // Caso contrário, se o Airtable gera outro ID interno que você quer mostrar,
+            // e ele NÃO ESTÁ NO CAMPO 'ID' da sua tabela, você pode usar 'airtableRecordId'.
+            // Para sua configuração atual de "Autonumber" no campo "ID", fields.ID é o correto.
+            const displayedId = fields.ID || 'N/A'; // Usa o valor do campo ID da Airtable
+
+            const dataFormatada = fields.DataSolicitacao ?
+                new Date(fields.DataSolicitacao).toLocaleString('pt-BR') :
                 'Data não informada';
-            
+
             const tr = document.createElement('tr');
             tr.className = 'table-row-hover border-b border-gray-100';
             tr.style.animationDelay = `${index * 0.1}s`;
             tr.classList.add('fade-in');
-            
+
             tr.innerHTML = `
                 <td class="px-6 py-4">
                     <div class="flex items-center">
                         <div class="w-8 h-8 bg-gradient-to-r from-teal-500 to-teal-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">
-                            ${fields.ID || '?'}
+                            ${displayedId}
                         </div>
                     </div>
                 </td>
@@ -163,9 +172,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 </td>
                 <td class="px-6 py-4">
                     <div class="max-w-xs">
-                        <p class="text-sm text-gray-800 truncate cursor-pointer hover:text-teal-600 transition-colors" 
-                           title="${fields.Descricao || 'Descrição não informada'}"
-                           onclick="mostrarDescricaoCompleta('${(fields.Descricao || '').replace(/'/g, "\\'")}')">
+                        <p class="text-sm text-gray-800 truncate cursor-pointer hover:text-teal-600 transition-colors"
+                            title="${fields.Descricao || 'Descrição não informada'}"
+                            onclick="mostrarDescricaoCompleta('${(fields.Descricao || '').replace(/'/g, "\\'")}')">
                             ${fields.Descricao || 'Descrição não informada'}
                         </p>
                     </div>
@@ -209,15 +218,16 @@ document.addEventListener('DOMContentLoaded', () => {
             const matchSetor = !setor || fields.Setor === setor;
             const matchPrioridade = !prioridade || fields.Prioridade === prioridade;
             const matchStatus = !status || fields.Status === status;
-            const matchSearch = !searchTerm || 
+            const matchSearch = !searchTerm ||
                 (fields.Nome && fields.Nome.toLowerCase().includes(searchTerm)) ||
                 (fields.Email && fields.Email.toLowerCase().includes(searchTerm)) ||
                 (fields.Descricao && fields.Descricao.toLowerCase().includes(searchTerm));
 
-            return matchSetor && matchPrioridade && matchStatus && matchSearch;
+            return matchSetor && matchPrioridade && matchStatus && matchStatus && matchSearch; // Corrigido aqui, 'matchStatus' duplicado
         });
-        
+
         renderizarChamados(chamadosFiltrados);
+        atualizarEstatisticas(chamadosFiltrados); // Atualiza estatísticas com base nos filtrados
     }
 
     async function carregarChamados() {
@@ -225,26 +235,24 @@ document.addEventListener('DOMContentLoaded', () => {
             setTableState("Erro: As credenciais do Airtable não foram configuradas corretamente no arquivo view.js.");
             return;
         }
-        
+
         setTableState('Carregando chamados do sistema...', true);
 
         try {
             const response = await fetch(AIRTABLE_URL, {
                 headers: { 'Authorization': `Bearer ${AIRTABLE_TOKEN}` }
             });
-            
+
             if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
-            
+
             const data = await response.json();
             todosChamados = data.records;
 
-            // Atualizar estatísticas
-            atualizarEstatisticas(todosChamados);
-
+            // Já atualizamos as estatísticas na função aplicarFiltros, que é chamada aqui
             if (todosChamados.length === 0) {
                 setTableState('Nenhum chamado encontrado no sistema.');
             } else {
-                aplicarFiltros();
+                aplicarFiltros(); // Isso também renderiza e atualiza estatísticas
             }
         } catch (error) {
             console.error("Erro ao carregar do Airtable:", error);
