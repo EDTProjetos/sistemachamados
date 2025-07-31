@@ -7,185 +7,294 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
     <style>
-        /* Animação de rotação para o spinner */
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+        @keyframes spin { from { transform: rotate(0deg ); } to { transform: rotate(360deg); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideIn { from { transform: translateX(-100%); } to { transform: translateX(0); } }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        
+        .fa-spinner { animation: spin 1s linear infinite; }
+        .fade-in { animation: fadeIn 0.6s ease-out; }
+        .slide-in { animation: slideIn 0.5s ease-out; }
+        .pulse-animation { animation: pulse 2s infinite; }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
-        .fa-spinner {
-            animation: spin 1s linear infinite;
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #0f766e 0%, #14b8a6 50%, #5eead4 100%);
         }
-        /* Estilo para focar nos inputs */
-        input:focus, select:focus, textarea:focus {
-            outline: none !important;
-            border-color: #20c997 !important; /* Cor verde-água */
-            box-shadow: 0 0 0 3px rgba(32, 201, 151, 0.3) !important; /* Sombra suave */
+        
+        .card-hover {
+            transition: all 0.3s ease;
         }
-        /* Estilo para o botão de envio */
-        .btn-primary {
-            background-color: #20c997; /* Verde-água */
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
-            font-weight: 600;
-            transition: all 0.2s ease-in-out;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
         }
-        .btn-primary:hover {
-            background-color: #17a2b8; /* Azul mais escuro ao passar o mouse */
-            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
-            transform: translateY(-2px);
+        
+        .input-focus {
+            transition: all 0.3s ease;
         }
-        .btn-primary:active {
-            transform: translateY(0);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        
+        .input-focus:focus {
+            transform: scale(1.02);
+            box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1);
+        }
+        
+        .floating-label {
+            position: relative;
+        }
+        
+        .floating-label input:focus + label,
+        .floating-label input:not(:placeholder-shown) + label {
+            transform: translateY(-1.5rem) scale(0.8);
+            color: #0f766e;
+        }
+        
+        .floating-label label {
+            position: absolute;
+            left: 0.75rem;
+            top: 0.5rem;
+            transition: all 0.3s ease;
+            pointer-events: none;
+            background: white;
+            padding: 0 0.25rem;
         }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-800 font-sans">
+<body class="min-h-screen gradient-bg">
 
     <!-- Tela de Login -->
-    <div id="loginScreen" class="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-500 to-cyan-600">
-        <div class="bg-white p-10 rounded-xl shadow-2xl w-full max-w-sm transform transition-all duration-300 hover:scale-105">
-            <h2 class="text-3xl font-extrabold text-center text-teal-700 mb-8">
-                <i class="fas fa-lock mr-3"></i>Login do Sistema
-            </h2>
+    <div id="loginScreen" class="min-h-screen flex items-center justify-center p-4">
+        <div class="glass-effect p-8 rounded-2xl shadow-2xl w-full max-w-md card-hover fade-in">
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-16 h-16 bg-teal-600 rounded-full mb-4 pulse-animation">
+                    <i class="fas fa-shield-alt text-2xl text-white"></i>
+                </div>
+                <h2 class="text-3xl font-bold text-teal-700 mb-2">Acesso Seguro</h2>
+                <p class="text-gray-600">Entre com suas credenciais</p>
+            </div>
+            
             <div class="space-y-6">
-                <div>
-                    <label for="loginUser" class="block text-sm font-semibold text-gray-700 mb-1">Usuário</label>
-                    <input type="text" id="loginUser" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition duration-200" placeholder="Digite seu usuário">
+                <div class="floating-label">
+                    <input type="text" id="loginUser" placeholder=" " class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-0 focus:border-teal-500 input-focus">
+                    <label for="loginUser" class="text-gray-500 font-medium">Usuário</label>
                 </div>
-                <div>
-                    <label for="loginPass" class="block text-sm font-semibold text-gray-700 mb-1">Senha</label>
-                    <input type="password" id="loginPass" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition duration-200" placeholder="Digite sua senha">
+                
+                <div class="floating-label">
+                    <input type="password" id="loginPass" placeholder=" " class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-0 focus:border-teal-500 input-focus">
+                    <label for="loginPass" class="text-gray-500 font-medium">Senha</label>
                 </div>
-                <button onclick="verificarLogin()" class="w-full btn-primary">
-                    Entrar
+                
+                <button onclick="verificarLogin()" class="w-full bg-gradient-to-r from-teal-600 to-teal-700 text-white py-3 rounded-xl font-semibold hover:from-teal-700 hover:to-teal-800 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                    <i class="fas fa-sign-in-alt mr-2"></i>Entrar
                 </button>
-                <p id="loginErro" class="text-red-600 text-sm text-center hidden mt-4 font-medium">Usuário ou senha incorretos. Tente novamente.</p>
+                
+                <p id="loginErro" class="text-red-500 text-sm text-center hidden bg-red-50 p-3 rounded-lg">
+                    <i class="fas fa-exclamation-triangle mr-2"></i>Usuário ou senha incorretos.
+                </p>
             </div>
         </div>
     </div>
 
     <!-- Conteúdo do Sistema (oculto até login) -->
-    <div id="mainApp" class="hidden min-h-screen flex flex-col">
+    <div id="mainApp" class="hidden min-h-screen">
         <!-- Header -->
-        <header class="bg-white shadow-lg py-4">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-                <div class="flex items-center space-x-4">
-                    <i class="fas fa-ticket-alt text-3xl text-teal-600"></i>
-                    <h1 class="text-2xl font-extrabold text-gray-900">Sistema de Chamados</h1>
+        <header class="glass-effect shadow-lg sticky top-0 z-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center space-x-4 slide-in">
+                        <div class="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-teal-600 to-teal-700 rounded-xl">
+                            <i class="fas fa-headset text-xl text-white"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-800">HelpDesk Pro</h1>
+                            <p class="text-sm text-gray-600">Sistema de Chamados</p>
+                        </div>
+                    </div>
+                    
+                    <nav class="flex items-center space-x-3">
+                        <a href="index.html" class="bg-gradient-to-r from-teal-600 to-teal-700 text-white px-6 py-3 rounded-xl text-sm font-medium shadow-lg hover:from-teal-700 hover:to-teal-800 transition-all duration-300 transform hover:scale-105">
+                            <i class="fas fa-plus mr-2"></i>Novo Chamado
+                        </a>
+                        <a href="visualizar.html" class="bg-white text-gray-700 px-6 py-3 rounded-xl text-sm font-medium hover:bg-gray-50 transition-all duration-300 shadow-md border border-gray-200">
+                            <i class="fas fa-list-ul mr-2"></i>Ver Chamados
+                        </a>
+                    </nav>
                 </div>
-                <nav class="flex items-center space-x-3">
-                    <a href="index.html" class="btn-primary text-sm">
-                        <i class="fas fa-plus mr-2"></i>Abrir Chamado
-                    </a>
-                    <a href="visualizar.html" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-300 transition-colors shadow-sm">
-                        <i class="fas fa-list-ul mr-2"></i>Visualizar Chamados
-                    </a>
-                </nav>
             </div>
         </header>
 
         <!-- Main Content -->
-        <main class="flex-grow max-w-4xl mx-auto px-4 py-12 w-full">
-            <div class="bg-white rounded-xl shadow-2xl overflow-hidden border border-gray-200">
-                <div class="bg-gradient-to-r from-teal-500 to-cyan-600 p-6">
-                    <h2 class="text-3xl font-bold text-white flex items-center">
-                        <i class="fas fa-edit mr-4"></i>Abrir Novo Chamado
-                    </h2>
-                    <p class="text-teal-100 mt-2">Preencha os detalhes abaixo para registrar seu problema ou solicitação.</p>
+        <main class="max-w-4xl mx-auto px-4 py-8">
+            <div class="glass-effect rounded-3xl shadow-2xl overflow-hidden card-hover fade-in">
+                <!-- Header do Card -->
+                <div class="bg-gradient-to-r from-teal-600 via-teal-700 to-teal-800 p-8 relative overflow-hidden">
+                    <div class="absolute inset-0 bg-black opacity-10"></div>
+                    <div class="relative z-10">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h2 class="text-3xl font-bold text-white flex items-center">
+                                    <i class="fas fa-ticket-alt mr-4 text-4xl"></i>
+                                    Abertura de Chamado
+                                </h2>
+                                <p class="text-teal-100 mt-2 text-lg">Descreva sua solicitação com detalhes para um atendimento eficiente</p>
+                            </div>
+                            <div class="hidden md:block">
+                                <div class="w-24 h-24 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-headphones text-3xl text-white"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <form id="chamadoForm" class="p-8 space-y-6">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label for="nome" class="block text-sm font-semibold text-gray-700 mb-1">Seu Nome Completo *</label>
-                            <input type="text" id="nome" required class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-teal-500 transition duration-200" placeholder="Ex: João da Silva">
+
+                <!-- Formulário -->
+                <form id="chamadoForm" class="p-8 space-y-8">
+                    <!-- Informações Pessoais -->
+                    <div class="bg-gray-50 p-6 rounded-2xl">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-6 flex items-center">
+                            <i class="fas fa-user-circle mr-3 text-teal-600"></i>
+                            Informações do Solicitante
+                        </h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="floating-label">
+                                <input type="text" id="nome" placeholder=" " required class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-0 focus:border-teal-500 input-focus bg-white">
+                                <label for="nome" class="text-gray-500 font-medium">Nome Completo *</label>
+                            </div>
+                            
+                            <div class="floating-label">
+                                <input type="email" id="email" placeholder=" " required class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-0 focus:border-teal-500 input-focus bg-white">
+                                <label for="email" class="text-gray-500 font-medium">E-mail para Contato *</label>
+                            </div>
                         </div>
-                        <div>
-                            <label for="email" class="block text-sm font-semibold text-gray-700 mb-1">Seu Email *</label>
-                            <input type="email" id="email" required class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-teal-500 transition duration-200" placeholder="Ex: seu.email@empresa.com">
-                        </div>
-                        <div>
-                            <label for="setor" class="block text-sm font-semibold text-gray-700 mb-1">Setor *</label>
-                            <select id="setor" required class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-teal-500 transition duration-200">
-                                <option value="">Selecione o setor</option>
-                                <option>TI</option>
-                                <option>Recursos Humanos</option>
-                                <option>Financeiro</option>
-                                <option>Comercial</option>
-                                <option>Operações</option>
-                                <option>Planejamento</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label for="prioridade" class="block text-sm font-semibold text-gray-700 mb-1">Prioridade *</label>
-                            <select id="prioridade" required class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-teal-500 transition duration-200">
-                                <option value="">Selecione a prioridade</option>
-                                <option>Baixa</option>
-                                <option>Média</option>
-                                <option>Alta</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div>
-                        <label for="descricao" class="block text-sm font-semibold text-gray-700 mb-1">Descrição do Chamado *</label>
-                        <textarea id="descricao" rows="5" required class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-teal-500 transition duration-200" placeholder="Descreva detalhadamente o problema ou solicitação..."></textarea>
-                    </div>
-                    <div>
-                        <label for="dataHora" class="block text-sm font-semibold text-gray-700 mb-1">Data e Hora da Solicitação</label>
-                        <input type="text" id="dataHora" class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 cursor-not-allowed" readonly>
                     </div>
 
-                    <div id="statusMessage" class="hidden p-4 rounded-lg text-sm font-medium text-center"></div>
+                    <!-- Detalhes do Chamado -->
+                    <div class="bg-blue-50 p-6 rounded-2xl">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-6 flex items-center">
+                            <i class="fas fa-cogs mr-3 text-blue-600"></i>
+                            Detalhes do Chamado
+                        </h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                            <div>
+                                <label for="setor" class="block text-sm font-medium text-gray-700 mb-2">Setor *</label>
+                                <select id="setor" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-0 focus:border-blue-500 input-focus bg-white">
+                                    <option value="">Selecione o setor...</option>
+                                    <option>TI</option>
+                                    <option>Recursos Humanos</option>
+                                    <option>Financeiro</option>
+                                    <option>Comercial</option>
+                                    <option>Operações</option>
+                                    <option>Planejamento</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label for="prioridade" class="block text-sm font-medium text-gray-700 mb-2">Prioridade *</label>
+                                <select id="prioridade" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-0 focus:border-blue-500 input-focus bg-white">
+                                    <option value="">Selecione a prioridade...</option>
+                                    <option value="Alta" class="text-red-600">🔴 Alta</option>
+                                    <option value="Média" class="text-yellow-600">🟡 Média</option>
+                                    <option value="Baixa" class="text-green-600">🟢 Baixa</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label for="chamadoId" class="block text-sm font-medium text-gray-700 mb-2">ID do Chamado</label>
+                                <input type="text" id="chamadoId" readonly class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl bg-gray-100 text-gray-600 font-mono text-center">
+                            </div>
+                        </div>
 
-                    <div class="flex justify-end">
-                        <button type="submit" id="submitBtn" class="btn-primary">
-                            <span id="btnText">Enviar Chamado</span>
+                        <div>
+                            <label for="descricao" class="block text-sm font-medium text-gray-700 mb-2">Descrição Detalhada do Problema *</label>
+                            <textarea id="descricao" rows="6" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-0 focus:border-blue-500 input-focus bg-white resize-none" placeholder="Descreva o problema ou solicitação com o máximo de detalhes possível. Inclua informações como: quando o problema começou, quais ações foram tentadas, mensagens de erro, etc."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Informações do Sistema -->
+                    <div class="bg-green-50 p-6 rounded-2xl">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                            <i class="fas fa-clock mr-3 text-green-600"></i>
+                            Informações do Sistema
+                        </h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-600 mb-2">Data/Hora da Solicitação</label>
+                                <input type="text" id="dataHora" readonly class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl bg-white text-gray-700 font-mono">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-600 mb-2">Status Inicial</label>
+                                <input type="text" value="🟡 Aguardando Atendimento" readonly class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl bg-white text-gray-700">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Status Message Area -->
+                    <div id="statusMessage" class="hidden p-6 rounded-2xl text-sm font-medium"></div>
+
+                    <!-- Botões de Ação -->
+                    <div class="flex items-center justify-end space-x-4 pt-6 border-t-2 border-gray-100">
+                        <button type="reset" class="bg-gray-200 text-gray-800 px-8 py-3 rounded-xl font-semibold hover:bg-gray-300 transition-all duration-300 transform hover:scale-105 shadow-md">
+                            <i class="fas fa-eraser mr-2"></i>Limpar Formulário
+                        </button>
+                        
+                        <button type="submit" id="submitBtn" class="bg-gradient-to-r from-teal-600 to-teal-700 text-white px-8 py-3 rounded-xl font-semibold hover:from-teal-700 hover:to-teal-800 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center min-w-[200px]">
+                            <span id="btnText">
+                                <i class="fas fa-paper-plane mr-2"></i>Enviar Chamado
+                            </span>
                             <i id="btnSpinner" class="fas fa-spinner hidden ml-2"></i>
                         </button>
                     </div>
                 </form>
             </div>
         </main>
-
-        <footer class="bg-gray-800 text-white text-center p-4 mt-8">
-            <p>&copy; 2024 Sistema de Chamados. Todos os direitos reservados.</p>
+        
+        <!-- Footer -->
+        <footer class="text-center py-8 text-gray-600">
+            <p class="flex items-center justify-center">
+                <i class="fas fa-shield-alt mr-2 text-teal-600"></i>
+                Sistema HelpDesk Pro - Desenvolvido com segurança e eficiência
+            </p>
         </footer>
     </div>
 
     <script>
-        // Função para exibir o conteúdo principal após o login
-        function showMainApp() {
-            document.getElementById("loginScreen").style.display = "none";
-            document.getElementById("mainApp").classList.remove("hidden");
-        }
-
-        // Função para verificar o login
         function verificarLogin() {
             const usuario = document.getElementById("loginUser").value;
             const senha = document.getElementById("loginPass").value;
             const erro = document.getElementById("loginErro");
 
-            // Credenciais de exemplo (substitua por autenticação real em um ambiente de produção)
             if (usuario === "admin2" && senha === "admin2") {
-                sessionStorage.setItem('loggedIn', 'true'); // Armazena o estado de login na sessão
-                showMainApp();
+                document.getElementById("loginScreen").style.display = "none";
+                document.getElementById("mainApp").classList.remove("hidden");
+                gerarProximoId();
             } else {
                 erro.classList.remove("hidden");
+                setTimeout(() => erro.classList.add("hidden"), 3000);
             }
         }
 
-        // Preenche data/hora atual no campo e verifica o estado de login ao carregar a página
-        window.onload = function () {
-            // Verifica se o usuário já está logado na sessão
-            if (sessionStorage.getItem('loggedIn') === 'true') {
-                showMainApp();
-            }
+        // Função para gerar o próximo ID sequencial
+        function gerarProximoId() {
+            let ultimoId = localStorage.getItem('ultimoChamadoId') || '0000';
+            let proximoNumero = parseInt(ultimoId) + 1;
+            let proximoId = proximoNumero.toString().padStart(4, '0');
+            
+            document.getElementById('chamadoId').value = proximoId;
+            return proximoId;
+        }
 
+        // Preenche data/hora atual no campo
+        window.onload = function () {
             const agora = new Date();
             const dataHoraFormatada = agora.toLocaleString('pt-BR', {
                 dateStyle: 'short',
@@ -194,6 +303,20 @@
             const campoData = document.getElementById("dataHora");
             if (campoData) campoData.value = dataHoraFormatada;
         };
+
+        // Adiciona efeitos visuais aos inputs
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputs = document.querySelectorAll('input, select, textarea');
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.parentElement.classList.add('transform', 'scale-105');
+                });
+                
+                input.addEventListener('blur', function() {
+                    this.parentElement.classList.remove('transform', 'scale-105');
+                });
+            });
+        });
     </script>
 
     <script src="assets/js/form.js"></script>
