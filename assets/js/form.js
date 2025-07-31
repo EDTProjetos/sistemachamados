@@ -13,6 +13,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnSpinner = document.getElementById('btnSpinner');
     const statusMessage = document.getElementById('statusMessage');
 
+    // Removemos o campo 'chamadoId' do HTML se ele existia para evitar confusão.
+    // Se você tem um <input type="text" id="chamadoId">, pode removê-lo ou mantê-lo invisível.
+    // A lógica de "atualizarChamadoId" e "obterProximoId" foi removida.
+    // O Airtable agora gerencia o ID.
+
     function showStatus(message, type) {
         statusMessage.innerHTML = message;
         statusMessage.className = 'p-6 rounded-2xl text-sm font-medium';
@@ -23,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
         statusMessage.classList.add(...(styles[type] || styles.info));
         statusMessage.classList.remove('hidden');
-        
+
         // Auto-hide success messages after 5 seconds
         if (type === 'success') {
             setTimeout(() => {
@@ -45,48 +50,9 @@ document.addEventListener('DOMContentLoaded', () => {
         submitBtn.classList.toggle('cursor-not-allowed', isSubmitting);
     }
 
-    // Função para obter o próximo ID sequencial
-    async function obterProximoId() {
-        try {
-            // Busca todos os registros para encontrar o último ID
-            const response = await fetch(`${AIRTABLE_URL}?sort[0][field]=ID&sort[0][direction]=desc&maxRecords=1`, {
-                headers: {
-                    'Authorization': `Bearer ${AIRTABLE_TOKEN}`
-                }
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                if (data.records && data.records.length > 0) {
-                    const ultimoId = data.records[0].fields.ID || '0000';
-                    const proximoNumero = parseInt(ultimoId) + 1;
-                    return proximoNumero.toString().padStart(4, '0');
-                }
-            }
-            
-            // Se não conseguir buscar ou não houver registros, usa localStorage como fallback
-            let ultimoId = localStorage.getItem('ultimoChamadoId') || '0000';
-            let proximoNumero = parseInt(ultimoId) + 1;
-            return proximoNumero.toString().padStart(4, '0');
-            
-        } catch (error) {
-            console.warn('Erro ao buscar último ID do Airtable, usando localStorage:', error);
-            let ultimoId = localStorage.getItem('ultimoChamadoId') || '0000';
-            let proximoNumero = parseInt(ultimoId) + 1;
-            return proximoNumero.toString().padStart(4, '0');
-        }
-    }
-
-    // Função para atualizar o ID no campo
-    async function atualizarChamadoId() {
-        const proximoId = await obterProximoId();
-        document.getElementById('chamadoId').value = proximoId;
-        return proximoId;
-    }
-
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        
+
         if (!AIRTABLE_TOKEN.startsWith('pat') || !AIRTABLE_BASE_ID.startsWith('app')) {
             showStatus(`
                 <div class="flex items-center">
@@ -111,11 +77,10 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         `, "info");
 
-        const chamadoId = document.getElementById('chamadoId').value;
-
+        // AQUI ESTÁ A MAIOR MUDANÇA: REMOVEMOS O CAMPO "ID" DO PAYLOAD.
+        // O Airtable, por ser "Autonumber", irá gerar seu próprio ID.
         const payload = {
             fields: {
-                "ID": chamadoId,
                 "Nome": document.getElementById('nome').value,
                 "Email": document.getElementById('email').value,
                 "Setor": document.getElementById('setor').value,
@@ -142,33 +107,34 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const result = await response.json();
+
+            // O ID agora virá da resposta do Airtable, que é o ID gerado por ele.
+            const airtableGeneratedId = result.id; // Airtable retorna o ID do registro em 'result.id'
             
-            // Salva o ID usado no localStorage para próximas sessões
-            localStorage.setItem('ultimoChamadoId', chamadoId);
+            // Se você quiser exibir o ID gerado pelo Airtable, pode usar 'airtableGeneratedId'.
+            // Não há mais necessidade de armazenar 'ultimoChamadoId' no localStorage para esta finalidade,
+            // pois o Airtable é a fonte da verdade para o ID agora.
 
             showStatus(`
                 <div class="flex items-center">
                     <i class="fas fa-check-circle mr-3 text-2xl"></i>
                     <div>
                         <strong>Chamado enviado com sucesso!</strong><br>
-                        <span class="text-sm">ID do Chamado: <strong class="font-mono bg-white px-2 py-1 rounded">${chamadoId}</strong></span><br>
+                        <span class="text-sm">ID do Chamado: <strong class="font-mono bg-white px-2 py-1 rounded">${airtableGeneratedId}</strong></span><br>
                         <span class="text-sm">Você receberá atualizações no e-mail informado.</span>
                     </div>
                 </div>
             `, "success");
-            
-            // Reset do formulário e geração de novo ID
+
+            // Reset do formulário
             form.reset();
-            setTimeout(async () => {
-                await atualizarChamadoId();
-                // Atualiza data/hora
-                const agora = new Date();
-                const dataHoraFormatada = agora.toLocaleString('pt-BR', {
-                    dateStyle: 'short',
-                    timeStyle: 'short'
-                });
-                document.getElementById("dataHora").value = dataHoraFormatada;
-            }, 1000);
+            // Atualiza data/hora após o envio
+            const agora = new Date();
+            const dataHoraFormatada = agora.toLocaleString('pt-BR', {
+                dateStyle: 'short',
+                timeStyle: 'short'
+            });
+            document.getElementById("dataHora").value = dataHoraFormatada;
             
         } catch (error) {
             console.error("Erro ao enviar para o Airtable:", error);
@@ -187,12 +153,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    form.addEventListener('reset', () => {
-        statusMessage.classList.add('hidden');
-        // Gera novo ID após reset
-        setTimeout(atualizarChamadoId, 100);
-    });
+    // Removido o evento 'reset' que chamava 'atualizarChamadoId',
+    // pois o ID não é mais gerado pelo frontend.
 
-    // Inicializa o ID quando a página carrega
-    atualizarChamadoId();
+    // Inicializa a data/hora quando a página carrega
+    const agora = new Date();
+    const dataHoraFormatada = agora.toLocaleString('pt-BR', {
+        dateStyle: 'short',
+        timeStyle: 'short'
+    });
+    document.getElementById("dataHora").value = dataHoraFormatada;
 });
